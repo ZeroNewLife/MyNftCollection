@@ -1,0 +1,72 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Параметры для кастомизации (можно менять) -->
+  <defs>
+    <!-- Цветовая схема - меняй эти значения -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6b6b"/>   <!-- Меняй этот цвет -->
+      <stop offset="50%" stop-color="#4ecdc4"/>  <!-- Меняй этот цвет -->
+      <stop offset="100%" stop-color="#45b7d1"/> <!-- Меняй этот цвет -->
+    </linearGradient>
+    
+    <!-- Форма ядра - меняй на circle, rect, polygon -->
+    <symbol id="coreShape" viewBox="0 0 100 100">
+      <polygon points="50,15 65,50 50,85 35,50" fill="currentColor"/> <!-- Меняй на другую форму -->
+    </symbol>
+
+    <filter id="neonGlow">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Фон -->
+  <rect width="400" height="400" fill="#1a1a2e"/>
+  
+  <!-- Основной орнамент -->
+  <g filter="url(#neonGlow)" stroke="url(#mainGradient)" stroke-width="2" fill="none">
+    <!-- Внешнее кольцо -->
+    <circle cx="200" cy="200" r="150" opacity="0.7">
+      <animate attributeName="r" values="150;160;150" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Вращающиеся элементы -->
+    <g>
+      <path d="M120,200 A80,80 0 1,1 280,200 A80,80 0 1,1 120,200" opacity="0.8">
+        <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="12s" repeatCount="indefinite"/>
+      </path>
+    </g>
+
+    <!-- Геометрическая сетка -->
+    <g stroke-width="1" opacity="0.5">
+      <line x1="100" y1="100" x2="300" y2="300">
+        <animate attributeName="stroke" values="#ff6b6b;#4ecdc4;#45b7d1;#ff6b6b" dur="6s" repeatCount="indefinite"/>
+      </line>
+      <line x1="300" y1="100" x2="100" y2="300">
+        <animate attributeName="stroke" values="#4ecdc4;#45b7d1;#ff6b6b;#4ecdc4" dur="6s" repeatCount="indefinite"/>
+      </line>
+    </g>
+  </g>
+
+  <!-- Центральное ядро (меняемая форма) -->
+  <g transform="translate(150,150)" fill="url(#mainGradient)">
+    <use href="#coreShape" width="100" height="100"/>
+    <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="20s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- Парящие частицы -->
+  <g fill="url(#mainGradient)">
+    <circle cx="100" cy="150" r="3">
+      <animate attributeName="cy" values="150;100;150" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="300" cy="250" r="3">
+      <animate attributeName="cy" values="250;300;250" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0.3;1" dur="4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Текстовый элемент -->
+  <text x="200" y="380" text-anchor="middle" fill="url(#mainGradient)" font-family="Arial" font-size="14" font-weight="bold">
+    DYNAMIC NFT
+  </text>
+</svg>

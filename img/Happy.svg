@@ -1,0 +1,69 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Фон с градиентом -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f23"/>
+      <stop offset="100%" stop-color="#1a1a2e"/>
+    </linearGradient>
+    
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00ff88"/>
+      <stop offset="50%" stop-color="#0088ff"/>
+      <stop offset="100%" stop-color="#ff0088"/>
+    </linearGradient>
+    
+    <filter id="glowFilter">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Фон -->
+  <rect width="400" height="400" fill="url(#bg)"/>
+  
+  <!-- Центральная сфера -->
+  <circle cx="200" cy="200" r="80" fill="none" stroke="url(#glow)" stroke-width="2" filter="url(#glowFilter)"/>
+  
+  <!-- Вращающиеся кольца -->
+  <g stroke="url(#glow)" stroke-width="1.5" fill="none" filter="url(#glowFilter)">
+    <ellipse cx="200" cy="200" rx="120" ry="40" opacity="0.7">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="8s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="200" cy="200" rx="100" ry="60" opacity="0.5">
+      <animateTransform attributeName="transform" type="rotate" from="45 200 200" to="405 200 200" dur="6s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="200" cy="200" rx="80" ry="80" opacity="0.3">
+      <animateTransform attributeName="transform" type="rotate" from="90 200 200" to="450 200 200" dur="10s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <!-- Плавающие частицы -->
+  <g fill="#00ff88" opacity="0.8">
+    <circle cx="150" cy="120" r="2">
+      <animate attributeName="cy" values="120;180;120" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="250" cy="280" r="2">
+      <animate attributeName="cy" values="280;220;280" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="320" cy="200" r="2">
+      <animate attributeName="cx" values="320;280;320" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="80" cy="200" r="2">
+      <animate attributeName="cx" values="80;120;80" dur="4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Пульсирующее ядро -->
+  <circle cx="200" cy="200" r="15" fill="none" stroke="#00ff88" stroke-width="2">
+    <animate attributeName="r" values="15;25;15" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Текст (опционально) -->
+  <text x="200" y="380" text-anchor="middle" fill="#00ff88" font-family="monospace" font-size="12" opacity="0.7">
+    ARCH | HYPR | RYZEN
+  </text>
+</svg>
