@@ -1,0 +1,144 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.30;
+
+import {Test,console} from "forge-std/Test.sol";
+import {MoodNft} from "../src/MoodNft.sol";
+
+contract TestMoodNft is Test {
+    MoodNft moodNft;
+    address USER=makeAddr("user");
+    string public constant SAD_SVG_URI = "data:image/svg+xml;base64,"
+        // SVG Header and ViewBox
+        "PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5z"
+        "PSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPCEtLSDQn9Cw0YDQsNC80LXRgtGA0Ysg"
+        "0LTQu9GPINC60LDRgdGC0L7QvNC40LfQsNGG0LjQuCAo0LzQvtC20L3QviDQvNC10L3Rj9GC0Ywp"
+        "IC0tPgogIDxkZWZzPgogICAgPCEtLSDQptCy0LXRgtC+0LLQsNGPINGB0YXQtdC80LAgLSDQvNC1"
+        // Gradient Definition (mainGradient)
+        "0L3Rj9C5INGN0YLQuCDQt9C90LDRh9C10L3QuNGPIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlk"
+        "PSJtYWluR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAg"
+        "ICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmY2YjZiIi8+ICAgPCEtLSDQnNC10L3R"
+        "j9C5INGN0YLQvtGCINGG0LLQtdGCIC0tPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1j"
+        "b2xvcj0iIzRlY2RjNCIvPiAgPCEtLSDQnNC10L3Rj9C5INGN0YLQvtGCINGG0LLQtdGCIC0tPgog"
+        "ICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0NWI3ZDEiLz4gPCEtLSDQnNC1"
+        "0L3Rj9C5INGN0YLQvtGCINGG0LLQtdGCIC0tPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIAog"
+        // Core Shape (Polygon Symbol)
+        "ICAgIDxzeW1ib2wgaWQ9ImNvcmVTaGFwZSIgdmlld0JveD0iMCAwIDEwMCAxMDAiPgogICAgICA8"
+        "cG9seWdvbiBwb2ludHM9IjUwLDE1IDY1LDUwIDUwLDg1IDM1LDUwIiBmaWxsPSJjdXJyZW50Q29s"
+        "b3IiLz4gPCEtLSDQnNC10L3Rj9C5INC90LAg0LTRgNGD0LPRg9GOINGE0L7RgNC80YMgLS0+CiAg"
+        "ICA8L3N5bWJvbD4KCiAgICA8ZmlsdGVyIGlkPSJuZW9uR2xvdyI+CiAgICAgIDxmZUdhdXNzaWFu"
+        "Qmx1ciBzdGREZXZpYXRpb249IjUiIHJlc3VsdD0iYmx1ciIvPgogICAgICA8ZmVDb21wb3NpdGUg"
+        "aW49IlNvdXJjZUdyYXBoaWMiIGluMj0iYmx1ciIgb3BlcmF0b3I9Im92ZXIiLz4KICAgIDwvZmls"
+        "dGVyPgogIDwvZGVmcz4KCiAgPCEtLSDQpNC+0L0gLS0+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVp"
+        "Z2h0PSI0MDAiIGZpbGw9IiMxYTFhMmUiLz4KICAKICA8IS0tINCe0YHQvdC+0LLQvdC+0Lkg0L7R"
+        "gNC90LDQvNC10L3RgiAtLT4KICA8ZyBmaWx0ZXI9InVybCgjbmVvbkdsb3cpIiBzdHJva2U9InVy"
+        // Animated Circles and Paths
+        "bCgjbWFpbkdyYWRpZW50KSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIj4KICAgIDwhLS0g"
+        "0JLQvdC10YjQvdC10LUg0LrQvtC70YzRhtC+IC0tPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0i"
+        "MjAwIiByPSIxNTAiIG9wYWNpdHk9IjAuNyI+CiAgICAgIDxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9"
+        "InIiIHZhbHVlcz0iMTUwOzE2MDsxNTAiIGR1cj0iNHMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRl"
+        "Ii8+CiAgICA8L2NpcmNsZT4KICAgIAogICAgPCEtLSDQktGA0LDRidCw0Y7RidC40LXRgdGPINGN"
+        "0LvQtdC80LXQvdGC0YsgLS0+CiAgICA8Zz4KICAgICAgPHBhdGggZD0iTTEyMCwyMDAgQTgwLDgw"
+        "IDAgMSwxIDI4MCwyMDAgQTgwLDgwIDAgMSwxIDEyMCwyMDAiIG9wYWNpdHk9IjAuOCI+CiAgICAg"
+        "ICAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3Rh"
+        "dGUiIGZyb209IjAgMjAwIDIwMCIgdG89IjM2MCAyMDAgMjAwIiBkdXI9IjEycyIgcmVwZWF0Q291"
+        "bnQ9ImluZGVmaW5pdGUiLz4KICAgICAgPC9wYXRoPgogICAgPC9nPgoKICAgIDwhLS0g0JPQtdC+"
+        "0LzQtdGC0YDQuNGH0LXRgdC60LDRjyDRgdC10YLQutCwIC0tPgogICAgPGcgc3Ryb2tlLXdpZHRo"
+        "PSIxIiBvcGFjaXR5PSIwLjUiPgogICAgICA8bGluZSB4MT0iMTAwIiB5MT0iMTAwIiB4Mj0iMzAw"
+        "IiB5Mj0iMzAwIj4KICAgICAgICA8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJzdHJva2UiIHZhbHVl"
+        "cz0iI2ZmNmI2YjsjNGVjZGM0OyM0NWI3ZDE7I2ZmNmI2YiIgZHVyPSI2cyIgcmVwZWF0Q291bnQ9"
+        "ImluZGVmaW5pdGUiLz4KICAgICAgPC9saW5lPgogICAgICA8bGluZSB4MT0iMzAwIiB5MT0iMTAw"
+        "IiB4Mj0iMTAwIiB5Mj0iMzAwIj4KICAgICAgICA8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJzdHJv"
+        "a2UiIHZhbHVlcz0iIzRlY2RjNDsjNDViN2QxOyNmZjZiNmI7IzRlY2RjNCIgZHVyPSI2cyIgcmVw"
+        "ZWF0Q291bnQ9ImluZGVmaW5pdGUiLz4KICAgICAgPC9saW5lPgogICAgPC9nPgogIDwvZz4KCiAg"
+        // Central Symbol and Rotation
+        "PCEtLSDQptC10L3RgtGA0LDQu9GM0L3QvtC1INGP0LTRgNC+ICjQvNC10L3Rj9C10LzQsNGPINGE"
+        "0L7RgNC80LApIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1MCwxNTApIiBmaWxsPSJ1"
+        "cmwoI21haW5HcmFkaWVudCkiPgogICAgPHVzZSBocmVmPSIjY29yZVNoYXBlIiB3aWR0aD0iMTAw"
+        "IiBoZWlnaHQ9IjEwMCIvPgogICAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJh"
+        "bnNmb3JtIiB0eXBlPSJyb3RhdGUiIGZyb209IjAgMjAwIDIwMCIgdG89IjM2MCAyMDAgMjAwIiBk"
+        "dXI9IjIwcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz4KICA8L2c+CgogIDwhLS0g0J/QsNGA"
+        "0Y/RidC40LUg0YfQsNGB0YLQuNGG0YsgLS0+CiAgPGcgZmlsbD0idXJsKCNtYWluR3JhZGllbnQp"
+        "Ij4KICAgIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjE1MCIgcj0iMyI+CiAgICAgIDxhbmltYXRlIGF0"
+        "dHJpYnV0ZU5hbWU9ImN5IiB2YWx1ZXM9IjE1MDsxMDA7MTUwIiBkdXI9IjNzIiByZXBlYXRDb3Vu"
+        "dD0iaW5kZWZpbml0ZSIvPgogICAgICA8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiB2"
+        "YWx1ZXM9IjAuMzsxOzAuMyIgZHVyPSIzcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz4KICAg"
+        "IDwvY2lyY2xlPgogICAgPGNpcmNsZSBjeD0iMzAwIiBjeT0iMjUwIiByPSIzIj4KICAgICAgPGFu"
+        // Small Animated Points and Final Text
+        "aW1hdGUgYXR0cmlidXRlTmFtZT0iY3kiIHZhbHVlcz0iMjUwOzMwMDsyNTAiIGR1cj0iNHMiIHJl"
+        "cGVhdENvdW50PSJpbmRlZmluaXRlIi8+CiAgICAgIDxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9Im9w"
+        "YWNpdHkiIHZhbHVlcz0iMTswLjM7MSIgZHVyPSI0cyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUi"
+        "Lz4KICAgIDwvY2lyY2xlPgogIDwvZz4KCiAgPCEtLSDQotC10LrRgdGC0L7QstGL0Lkg0Y3Qu9C1"
+        "0LzQtdC90YIgLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIzODAiIHRleHQtYW5jaG9yPSJtaWRkbGUi"
+        "IGZpbGw9InVybCgjbWFpbkdyYWRpZW50KSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9"
+        "IjE0IiBmb250LXdlaWdodD0iYm9sZCI+CiAgICBEWU5BTUlDIE5GVAogIDwvdGV4dD4KPC9zdmc+" "";
+    string public constant HAPPY_SVG_URI = "data:image/svg+xml;base64,"
+        // Начало SVG-кода
+        "PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5z"
+        "PSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPCEtLSDQpNC+0L0g0YEg0LPRgNCw0LTQ"
+        // Градиенты и определения (defs)
+        "uNC10L3RgtC+0LwgLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0i"
+        "MCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIg"
+        "c3RvcC1jb2xvcj0iIzBmMGYyMyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29s"
+        "b3I9IiMxYTFhMmUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAKICAgIDxsaW5lYXJHcmFk"
+        // Фильтр свечения (glow filter)
+        "aWVudCBpZD0iZ2xvdyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAg"
+        "IDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMGZmODgiLz4KICAgICAgPHN0b3Agb2Zm"
+        "c2V0PSI1MCUiIHN0b3AtY29sb3I9IiMwMDg4ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAl"
+        "IiBzdG9wLWNvbG9yPSIjZmYwMDg4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgCiAgICA8"
+        "ZmlsdGVyIGlkPSJnbG93RmlsdGVyIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlv"
+        // Основной прямоугольник и окружность
+        "bj0iMyIgcmVzdWx0PSJjb2xvcmVkQmx1ciIvPgogICAgICA8ZmVNZXJnZT4KICAgICAgICA8ZmVN"
+        "ZXJnZU5vZGUgaW49ImNvbG9yZWRCbHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3Vy"
+        "Y2VHcmFwaGljIi8+CiAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPCEt"
+        "LSDQpNC+0L0gLS0+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgj"
+        "YmcpIi8+CiAgCiAgPCEtLSDQptC10L3RgtGA0LDQu9GM0L3QsNGPINGB0YTQtdGA0LAgLS0+CiAg"
+        // Анимированные эллипсы
+        "PGNpcmNsZSBjeD0iMjAwIiBjeT0iMjAwIiByPSI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwo"
+        "I2dsb3cpIiBzdHJva2Utd2lkdGg9IjIiIGZpbHRlcj0idXJsKCNnbG93RmlsdGVyKSIvPgogIAog"
+        "IDwhLS0g0JLRgNCw0YnQsNGO0YnQuNC10YHRjyDQutC+0LvRjNGG0LAgLS0+CiAgPGcgc3Ryb2tl"
+        "PSJ1cmwoI2dsb3cpIiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIgZmlsdGVyPSJ1cmwo"
+        "I2dsb3dGaWx0ZXIpIj4KICAgIDxlbGxpcHNlIGN4PSIyMDAiIGN5PSIyMDAiIHJ4PSIxMjAiIHJ5"
+        "PSI0MCIgb3BhY2l0eT0iMC43Ij4KICAgICAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFt"
+        "ZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIGZyb209IjAgMjAwIDIwMCIgdG89IjM2MCAyMDAg"
+        "MjAwIiBkdXI9IjhzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIvPgogICAgPC9lbGxpcHNlPgog"
+        "ICAgPGVsbGlwc2UgY3g9IjIwMCIgY3k9IjIwMCIgcng9IjEwMCIgcnk9IjYwIiBvcGFjaXR5PSIw"
+        // Конец анимации и текст
+        "LjUiPgogICAgICA8YW5pbWF0ZVRyYW5zZm9ybSBhdHRyaWJ1dGVOYW1lPSJ0cmFuc2Zvcm0iIHR5"
+        "cGU9InJvdGF0ZSIgZnJvbT0iNDUgMjAwIDIwMCIgdG89IjQwNSAyMDAgMjAwIiBkdXI9IjZzIiBy"
+        "ZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIvPgogICAgPC9lbGxpcHNlPgogICAgPGVsbGlwc2UgY3g9"
+        "IjIwMCIgY3k9IjIwMCIgcng9IjgwIiByeT0iODAiIG9wYWNpdHk9IjAuMyI+CiAgICAgIDxhbmlt"
+        "YXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiBmcm9t"
+        "PSI5MCAyMDAgMjAwIiB0bz0iNDUwIDIwMCAyMDAiIGR1cj0iMTBzIiByZXBlYXRDb3VudD0iaW5k"
+        "ZWZpbml0ZSIvPgogICAgPC9lbGxpcHNlPgogIDwvZz4KCiAgPCEtLSDQn9C70LDQstCw0Y7RidC4"
+        "0LUg0YfQsNGB0YLQuNGG0YsgLS0+CiAgPGcgZmlsbD0iIzAwZmY4OCIgb3BhY2l0eT0iMC44Ij4K"
+        "ICAgIDxjaXJjbGUgY3g9IjE1MCIgY3k9IjEyMCIgcj0iMiI+CiAgICAgIDxhbmltYXRlIGF0dHJp"
+        "YnV0ZU5hbWU9ImN5IiB2YWx1ZXM9IjEyMDsxODA7MTIwIiBkdXI9IjRzIiByZXBlYXRDb3VudD0i"
+        "aW5kZWZpbml0ZSIvPgogICAgPC9jaXJjbGU+CiAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIyODAi"
+        "IHI9IjIiPgogICAgICA8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJjeSIgdmFsdWVzPSIyODA7MjIw"
+        "OzI4MCIgZHVyPSIzcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz4KICAgIDwvY2lyY2xlPgog"
+        "ICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMjAwIiByPSIyIj4KICAgICAgPGFuaW1hdGUgYXR0cmli"
+        "dXRlTmFtZT0iY3giIHZhbHVlcz0iMzIwOzI4MDszMjAiIGR1cj0iNXMiIHJlcGVhdENvdW50PSJp"
+        "bmRlZmluaXRlIi8+CiAgICA8L2NpcmNsZT4KICAgIDxjaXJjbGUgY3g9IjgwIiBjeT0iMjAwIiBy"
+        "PSIyIj4KICAgICAgPGFuaW1hdGUgYXR0cmlidXRlTmFtZT0iY3giIHZhbHVlcz0iODA7MTIwOzgw"
+        "IiBkdXI9IjRzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIvPgogICAgPC9jaXJjbGU+CiAgPC9n"
+        "PgoKICA8IS0tINCf0YPQu9GM0YHQuNGA0YPRjtGJ0LXQtSDRj9C00YDQviAtLT4KICA8Y2lyY2xl"
+        "IGN4PSIyMDAiIGN5PSIyMDAiIHI9IjE1IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGZmODgiIHN0"
+        "cm9rZS13aWR0aD0iMiI+CiAgICA8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJyIiB2YWx1ZXM9IjE1"
+        "OzI1OzE1IiBkdXI9IjJzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIvPgogICAgPGFuaW1hdGUg"
+        "YXR0cmlidXRlTmFtZT0ib3BhY2l0eSIgdmFsdWVzPSIwLjM7MTswLjMiIGR1cj0iMnMiIHJlcGVh"
+        "dENvdW50PSJpbmRlZmluaXRlIi8+CiAgPC9jaXJjbGU+CgogIDwhLS0g0KLQtdC60YHRgiAo0L7Q"
+        "v9GG0LjQvtC90LDQu9GM0L3QvikgLS0+CiAgPHRleHQgeD0iMjAwIiB5PSIzODAiIHRleHQtYW5j"
+        "aG9yPSJtaWRkbGUiIGZpbGw9IiMwMGZmODgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQt"
+        "c2l6ZT0iMTIiIG9wYWNpdHk9IjAuNyI+CiAgICBBUkNIIHwgSFlQUiB8IFJZWkVOCiAgPC90ZXh0" "Pgo8L3N2Zz4=";
+
+    function setUp() public {
+        moodNft = new MoodNft(SAD_SVG_URI,HAPPY_SVG_URI);
+    }
+
+    function testViewTokenUri() public {
+        vm.prank(USER);
+        moodNft.mint();
+        console.log(moodNft.tokenURI(0));
+    }
+}
