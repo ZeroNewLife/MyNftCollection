@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.30;
 
-import {Test,console} from "forge-std/Test.sol";
+import {Test, console} from "forge-std/Test.sol";
 import {MoodNft} from "../src/MoodNft.sol";
 
 contract TestMoodNft is Test {
     MoodNft moodNft;
-    address USER=makeAddr("user");
+    address USER = makeAddr("user");
     string public constant SAD_SVG_URI = "data:image/svg+xml;base64,"
         // SVG Header and ViewBox
         "PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5z"
@@ -133,7 +133,7 @@ contract TestMoodNft is Test {
         "c2l6ZT0iMTIiIG9wYWNpdHk9IjAuNyI+CiAgICBBUkNIIHwgSFlQUiB8IFJZWkVOCiAgPC90ZXh0" "Pgo8L3N2Zz4=";
 
     function setUp() public {
-        moodNft = new MoodNft(SAD_SVG_URI,HAPPY_SVG_URI);
+        moodNft = new MoodNft(SAD_SVG_URI, HAPPY_SVG_URI);
     }
 
     function testViewTokenUri() public {

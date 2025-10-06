@@ -1,6 +1,3 @@
-
-
-
 //Happy svg
 data:image/svg+xml;base64,
 PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5z
