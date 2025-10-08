@@ -9,6 +9,7 @@ import {DeployMoodNft} from "../../script/DeployMoodNft.s.sol";
 
 contract TestMoodIntegrationNft is Test {
     MoodNft moodNft;
+    DeployMoodNft deployMood;
     address USER = makeAddr("user");
     string public constant SAD_SVG_URI = "data:image/svg+xml;base64,"
         // SVG Header and ViewBox
@@ -134,13 +135,30 @@ contract TestMoodIntegrationNft is Test {
         "aG9yPSJtaWRkbGUiIGZpbGw9IiMwMGZmODgiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQt"
         "c2l6ZT0iMTIiIG9wYWNpdHk9IjAuNyI+CiAgICBBUkNIIHwgSFlQUiB8IFJZWkVOCiAgPC90ZXh0" "Pgo8L3N2Zz4=";
 
+   
+   
+   
+   
+   
     function setUp() public {
-        moodNft = new MoodNft(SAD_SVG_URI, HAPPY_SVG_URI);
+        deployMood=new DeployMoodNft();
+        moodNft=deployMood.run();
+        //moodNft = new MoodNft(SAD_SVG_URI, HAPPY_SVG_URI);
     }
 
-    function testViewTokenUri() public {
+    function testViewTokenIntegrationUri() public {
         vm.prank(USER);
         moodNft.mint();
         console.log(moodNft.tokenURI(0));
+    }
+
+    function testFlipMintTokenSad() public{
+        vm.prank(USER);
+        moodNft.mint();
+        moodNft.flipMood(0);
+        assert(keccak256(abi.encodePacked(moodNft.tokenURI(0)))==keccak256(abi.encodePacked(HAPPY_SVG_URI)));
+
+
+
     }
 }

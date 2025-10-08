@@ -13,8 +13,8 @@ contract TestDeployMoodNft is Test {
 
     }
 
-    function testConvertatorSvg() public {
-        string memory svgObject="";
-        string memory actualSvg="";
-    }
+    // function testConvertatorSvg() public view {
+    //     string memory svgObject="";
+    //     string memory actualSvg="";
+    // }
 }
